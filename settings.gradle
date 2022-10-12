@@ -10,8 +10,18 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        flatDir {
+            dirs 'libs'
+        }
+        // ----- 广告 -----
+        //Anythink(Core)
+        maven {
+            url "https://anythink.jfrog.io/artifactory/android_sdk"
+        }
+        // ----- 广告 -----
     }
 }
 rootProject.name = "AdMobSample"
 include ':app'
 include ':toponsample'
+include ':topon'
