@@ -9,7 +9,9 @@ import androidx.core.view.updateLayoutParams
 import com.anythink.banner.api.ATBannerListener
 import com.anythink.banner.api.ATBannerView
 import com.anythink.core.api.*
+import com.anythink.interstitial.api.ATInterstitialAutoAd
 import com.anythink.interstitial.api.ATInterstitialAutoEventListener
+import com.anythink.interstitial.api.ATInterstitialAutoLoadListener
 import com.anythink.network.admob.AdmobATConst
 import com.anythink.network.facebook.FacebookATConst
 import com.anythink.network.mintegral.MintegralATConst
@@ -98,6 +100,10 @@ object TopOnManager : ITopOnManager {
         }
     }
 
+    // 加载成功的广告位id
+    private val mInterstitialAdQueue = ArrayBlockingQueue<String>(10, false)
+
+    // 插页广告加载回调
     private val autoInterstitialAdEventListener = object : ATInterstitialAutoEventListener() {
         override fun onInterstitialAdClicked(info: ATAdInfo?) {
             Log.d(TAG, "onInterstitialAdClicked: $info")
@@ -228,6 +234,77 @@ object TopOnManager : ITopOnManager {
         adView.loadAd()
     }
     // ===== Banner横幅广告 =====
+
+    // ===== 插页广告全自动加载 =====
+    fun loadInterstitialAutoAd(context: Context) {
+        ATInterstitialAutoAd.init(
+            context,
+            getPlacementIds(TopOnAdType.Interstitial).toTypedArray(),
+            object : ATInterstitialAutoLoadListener {
+                override fun onInterstitialAutoLoaded(placementId: String) {
+                    Log.d(TAG, "onInterstitialAutoLoaded: $placementId")
+                    mInterstitialAdQueue.offer(placementId)
+                }
+
+                override fun onInterstitialAutoLoadFail(placementId: String?, error: AdError?) {
+                    Log.e(
+                        TAG,
+                        "onInterstitialAutoLoadFail: $placementId ${error?.fullErrorInfo}"
+                    )
+                }
+
+            })
+    }
+
+    /**
+     * 获取一个插页广告有效的placementId
+     */
+    private fun getInterstitialAdValidId() = mInterstitialAdQueue.poll()
+
+    /**
+     * 插页广告是否准备好
+     */
+    fun isInterstitialAdReady() = mInterstitialAdQueue.isNotEmpty()
+
+    /**
+     * 显示插页广告
+     * @param activity
+     * @param isAutoFill true 会自动去拿一个有效的广告加载 false 手动加载 传入第三个参数
+     * @param placementId
+     */
+    fun showInterstitialAutoAd(
+        activity: Activity,
+        isAutoFill: Boolean = true,
+        placementId: String? = null
+    ) {
+        if (isAutoFill) {
+            val validId = getInterstitialAdValidId()
+            if (validId != null) {
+                if (ATInterstitialAutoAd.isAdReady(validId)) {
+                    setInterstitialLocalExtra(validId)
+                    ATInterstitialAutoAd.show(activity, validId, autoInterstitialAdEventListener)
+                }
+            }
+        } else {
+            if (placementId != null) {
+                if (ATInterstitialAutoAd.isAdReady(placementId)) {
+                    setInterstitialLocalExtra(placementId)
+                    ATInterstitialAutoAd.show(
+                        activity,
+                        placementId,
+                        autoInterstitialAdEventListener
+                    )
+                }
+            }
+        }
+    }
+
+    fun setInterstitialLocalExtra(placementId: String) {
+        val map = getPlacementIdLocalExtra(placementId)
+        //从下一次的广告加载开始生效
+        ATInterstitialAutoAd.setLocalExtra(placementId, map)
+    }
+    // ===== 插页广告全自动加载 =====
 
     // ===== 激励视频全自动加载 =====
     fun loadRewardVideoAuto(context: Context) {

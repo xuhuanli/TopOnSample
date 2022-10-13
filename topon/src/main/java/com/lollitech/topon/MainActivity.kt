@@ -60,6 +60,10 @@ class MainActivity : AppCompatActivity() {
         binding.btnInterstitialAuto.setOnClickListener {
             TopOnManager.showInterstitialAutoAd(this)
         }
+
+        binding.btnAppOpen.setOnClickListener {
+
+        }
     }
 
     // ===== 激励视频 =====
