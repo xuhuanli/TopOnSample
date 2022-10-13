@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import com.anythink.banner.api.ATBannerListener
 import com.anythink.banner.api.ATBannerView
 import com.anythink.core.api.*
@@ -166,26 +168,26 @@ object TopOnManager : ITopOnManager {
         ATSDK.setDebuggerConfig(
             context,
             deviceId,
-            ATDebuggerConfig.Builder(FacebookATConst.DEBUGGER_CONFIG.Facebook_NETWORK).build()
-        )
-
-        ATSDK.setDebuggerConfig(
-            context,
-            deviceId,
             ATDebuggerConfig.Builder(AdmobATConst.DEBUGGER_CONFIG.Admob_NETWORK).build()
         )
 
-        ATSDK.setDebuggerConfig(
-            context,
-            deviceId,
-            ATDebuggerConfig.Builder(MintegralATConst.DEBUGGER_CONFIG.Mintegral_NETWORK).build()
-        )
+//        ATSDK.setDebuggerConfig(
+//            context,
+//            deviceId,
+//            ATDebuggerConfig.Builder(FacebookATConst.DEBUGGER_CONFIG.Facebook_NETWORK).build()
+//        )
 
-        ATSDK.setDebuggerConfig(
-            context,
-            deviceId,
-            ATDebuggerConfig.Builder(PangleATConst.DEBUGGER_CONFIG.Pangle_NETWORK).build()
-        )
+//        ATSDK.setDebuggerConfig(
+//            context,
+//            deviceId,
+//            ATDebuggerConfig.Builder(MintegralATConst.DEBUGGER_CONFIG.Mintegral_NETWORK).build()
+//        )
+
+//        ATSDK.setDebuggerConfig(
+//            context,
+//            deviceId,
+//            ATDebuggerConfig.Builder(PangleATConst.DEBUGGER_CONFIG.Pangle_NETWORK).build()
+//        )
     }
 
     override fun enableDebug(context: Context) {
@@ -212,7 +214,10 @@ object TopOnManager : ITopOnManager {
         //TODO 1.4.0 xhl 必须跟TopOn后台配置的Banner广告源宽高比例一致，假设尺寸为320x50
         val height = (width / (320 / 50f)).toInt() //按照比例转换高度的值
 
-        adView.layoutParams = FrameLayout.LayoutParams(width, height)
+        adView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            this.width = width
+            this.height = height
+        }
 
         val localMap: MutableMap<String, Any> = HashMap()
         localMap[ATAdConst.KEY.AD_WIDTH] = width

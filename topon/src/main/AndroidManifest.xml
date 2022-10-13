@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         tools:replace="android:allowBackup"
         android:name=".TopOnApplication"
-        android:theme="@style/Theme.AdMobSample" >
+        android:theme="@style/Theme.TopOnSample" >
         <activity
             android:name=".MainActivity"
             android:exported="true" >

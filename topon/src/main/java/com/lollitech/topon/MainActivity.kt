@@ -27,64 +27,6 @@ class MainActivity : AppCompatActivity() {
     private var isLoadingRewardVideo = false
     private var isLoadedRewardVideo = false
 
-    private val autoRewardVideoAdEventListener = object : ATRewardVideoAutoEventListener() {
-        override fun onRewardedVideoAdPlayStart(info: ATAdInfo?) {
-            //ATAdInfo可区分广告平台以及获取广告平台的广告位ID等
-            //请参考 https://docs.toponad.com/#/zh-cn/android/android_doc/android_sdk_callback_access?id=callback_info
-
-            //建议在此回调中调用load进行广告的加载，方便下一次广告的展示（不需要调用isAdReady()）
-            Log.d(TAG, "onRewardedVideoAdLoaded: $info")
-        }
-
-        override fun onRewardedVideoAdPlayEnd(info: ATAdInfo?) {
-            Log.d(TAG, "onRewardedVideoAdPlayEnd: $info")
-        }
-
-        override fun onRewardedVideoAdPlayFailed(error: AdError?, info: ATAdInfo?) {
-            Log.e(TAG, "onRewardedVideoAdPlayFailed: error = ${error?.fullErrorInfo} info = $info")
-        }
-
-        override fun onRewardedVideoAdClosed(info: ATAdInfo?) {
-            Log.d(TAG, "onRewardedVideoAdClosed: $info")
-        }
-
-        override fun onRewardedVideoAdPlayClicked(info: ATAdInfo?) {
-            Log.d(TAG, "onRewardedVideoAdPlayClicked: $info")
-        }
-
-        override fun onReward(info: ATAdInfo?) {
-            Log.d(TAG, "onReward: $info")
-        }
-
-    }
-
-    private val autoInterstitialAdEventListener = object : ATInterstitialAutoEventListener() {
-        override fun onInterstitialAdClicked(info: ATAdInfo?) {
-            Log.d(TAG, "onInterstitialAdClicked: $info")
-        }
-
-        override fun onInterstitialAdShow(info: ATAdInfo?) {
-            Log.d(TAG, "onInterstitialAdClicked: $info")
-        }
-
-        override fun onInterstitialAdClose(info: ATAdInfo?) {
-            Log.d(TAG, "onInterstitialAdClose: $info")
-        }
-
-        override fun onInterstitialAdVideoStart(info: ATAdInfo?) {
-            Log.d(TAG, "onInterstitialAdVideoStart: $info")
-        }
-
-        override fun onInterstitialAdVideoEnd(info: ATAdInfo?) {
-            Log.d(TAG, "onInterstitialAdVideoEnd: $info")
-        }
-
-        override fun onInterstitialAdVideoError(info: AdError?) {
-            Log.e(TAG, "onInterstitialAdVideoError: $info")
-        }
-
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -180,29 +122,4 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ===== 激励视频 =====
-
-    // ===== 插页广告全自动加载 =====
-    private fun showInterstitialAutoAd(placement: String) {
-        if (ATInterstitialAutoAd.isAdReady(placement)) {
-            ATInterstitialAutoAd.show(this, placement, autoInterstitialAdEventListener)
-        }
-    }
-
-    private fun setInterstitialLocalExtra(placementId: String) {
-        val map = getPlacementIdLocalExtra(placementId)
-        //从下一次的广告加载开始生效
-        ATInterstitialAutoAd.setLocalExtra(placementId, map)
-    }
-
-    // ===== 插页广告全自动加载 =====
-
-    //设置服务器回调localExtra信息
-    private fun getPlacementIdLocalExtra(placementId: String): MutableMap<String, Any> {
-        val userid = "test_userid_001"
-        val userdata = "test_userdata_001_" + placementId + "_" + System.currentTimeMillis()
-        val localMap: MutableMap<String, Any> = HashMap()
-        localMap[ATAdConst.KEY.USER_ID] = userid
-        localMap[ATAdConst.KEY.USER_CUSTOM_DATA] = userdata
-        return localMap
-    }
 }

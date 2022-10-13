@@ -3,16 +3,14 @@ package com.lollitech.topon_china
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import android.widget.FrameLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
 import com.anythink.banner.api.ATBannerListener
 import com.anythink.banner.api.ATBannerView
 import com.anythink.core.api.*
 import com.anythink.interstitial.api.ATInterstitialAutoAd
 import com.anythink.interstitial.api.ATInterstitialAutoEventListener
 import com.anythink.interstitial.api.ATInterstitialAutoLoadListener
-import com.anythink.network.gdt.GDTATConst.DEBUGGER_CONFIG.GDT_NETWORK
-import com.anythink.network.ks.KSATConst.DEBUGGER_CONFIG.KS_NETWORK
-import com.anythink.network.mintegral.MintegralATConst.DEBUGGER_CONFIG.Mintegral_NETWORK
 import com.anythink.network.toutiao.TTATConst.DEBUGGER_CONFIG.TT_NETWORK
 import com.anythink.rewardvideo.api.ATRewardVideoAutoAd
 import com.anythink.rewardvideo.api.ATRewardVideoAutoEventListener
@@ -172,11 +170,11 @@ object TopOnManager : ITopOnManager {
     }
 
     override fun setTopOnDebugConfig(context: Context, deviceId: String) {
-        ATSDK.setDebuggerConfig(
-            context,
-            deviceId,
-            ATDebuggerConfig.Builder(GDT_NETWORK).build()
-        )
+//        ATSDK.setDebuggerConfig(
+//            context,
+//            deviceId,
+//            ATDebuggerConfig.Builder(GDT_NETWORK).build()
+//        )
 
         ATSDK.setDebuggerConfig(
             context,
@@ -184,17 +182,17 @@ object TopOnManager : ITopOnManager {
             ATDebuggerConfig.Builder(TT_NETWORK).build()
         )
 
-        ATSDK.setDebuggerConfig(
-            context,
-            deviceId,
-            ATDebuggerConfig.Builder(Mintegral_NETWORK).build()
-        )
+//        ATSDK.setDebuggerConfig(
+//            context,
+//            deviceId,
+//            ATDebuggerConfig.Builder(Mintegral_NETWORK).build()
+//        )
 
-        ATSDK.setDebuggerConfig(
-            context,
-            deviceId,
-            ATDebuggerConfig.Builder(KS_NETWORK).build()
-        )
+//        ATSDK.setDebuggerConfig(
+//            context,
+//            deviceId,
+//            ATDebuggerConfig.Builder(KS_NETWORK).build()
+//        )
     }
 
     override fun enableDebug(context: Context) {
@@ -221,7 +219,10 @@ object TopOnManager : ITopOnManager {
         //TODO 1.4.0 xhl 必须跟TopOn后台配置的Banner广告源宽高比例一致，假设尺寸为320x50
         val height = (width / (320 / 50f)).toInt() //按照比例转换高度的值
 
-        adView.layoutParams = FrameLayout.LayoutParams(width, height)
+        adView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            this.width = width
+            this.height = height
+        }
 
         val localMap: MutableMap<String, Any> = HashMap()
         localMap[ATAdConst.KEY.AD_WIDTH] = width

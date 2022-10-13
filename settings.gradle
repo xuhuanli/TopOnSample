@@ -27,7 +27,7 @@ dependencyResolutionManagement {
         // ----- 广告 -----
     }
 }
-rootProject.name = "AdMobSample"
+rootProject.name = "TopOnSample"
 include ':topon'
 include ':topon_google'
 include ':topon_china'
