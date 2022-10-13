@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.anythink.banner.api.ATBannerListener
 import com.anythink.core.api.ATAdConst
 import com.anythink.core.api.ATAdInfo
 import com.anythink.core.api.AdError
 import com.anythink.interstitial.api.ATInterstitialAutoAd
 import com.anythink.interstitial.api.ATInterstitialAutoEventListener
-import com.anythink.interstitial.api.ATInterstitialAutoLoadListener
-import com.anythink.rewardvideo.api.*
+import com.anythink.rewardvideo.api.ATRewardVideoAd
+import com.anythink.rewardvideo.api.ATRewardVideoAutoEventListener
+import com.anythink.rewardvideo.api.ATRewardVideoListener
 import com.lollitech.mylibrary.TopOnAdType
 import com.lollitech.topon.databinding.ActivityMainBinding
 import com.lollitech.topon_china.TopOnManager
@@ -91,37 +91,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnBanner.setOnClickListener {
-            binding.adBanner.setPlacementId(TopOnManager.getPlacementIds(TopOnAdType.Banner).first())
-            binding.adBanner.setBannerAdListener(object : ATBannerListener {
-                override fun onBannerLoaded() {
-                    Log.d(TAG, "onBannerLoaded: success")
-                }
-
-                override fun onBannerFailed(error: AdError?) {
-                    Log.e(TAG, "onBannerFailed: ${error?.fullErrorInfo}")
-                }
-
-                override fun onBannerClicked(info: ATAdInfo?) {
-                    Log.d(TAG, "onBannerClicked: $info")
-                }
-
-                override fun onBannerShow(info: ATAdInfo?) {
-                    Log.d(TAG, "onBannerShow: $info")
-                }
-
-                override fun onBannerClose(info: ATAdInfo?) {
-                    Log.d(TAG, "onBannerClose: $info")
-                }
-
-                override fun onBannerAutoRefreshed(info: ATAdInfo?) {
-                    Log.d(TAG, "onBannerAutoRefreshed: $info")
-                }
-
-                override fun onBannerAutoRefreshFail(error: AdError?) {
-                    Log.e(TAG, "onBannerAutoRefreshFail: ${error?.fullErrorInfo}")
-                }
-            })
-            binding.adBanner.loadAd()
+            TopOnManager.loadAndShowBannerAd(binding.adBanner)
         }
 
         binding.btnVideo.setOnClickListener {
@@ -134,47 +104,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        TopOnManager.loadRewardVideoAuto(this)
+
         binding.btnVideoAuto.setOnClickListener {
-            ATRewardVideoAutoAd.init(this,
-                TopOnManager.getPlacementIds(TopOnAdType.RewardVideo).toTypedArray(),
-                object : ATRewardVideoAutoLoadListener {
-                    override fun onRewardVideoAutoLoaded(placementId: String) {
-                        Log.d(TAG, "onRewardVideoAutoLoaded: $placementId")
-                        showRewardVideoAutoAd(placementId)
-                    }
-
-                    override fun onRewardVideoAutoLoadFail(placementId: String?, error: AdError?) {
-                        Log.e(
-                            TAG,
-                            "onRewardVideoAutoLoadFail: $placementId ${error?.fullErrorInfo}"
-                        )
-                    }
-
-                })
+            TopOnManager.showRewardVideoAutoAd(this)
         }
 
         binding.btnInterstitial.setOnClickListener {
             Toast.makeText(this, "推荐用插页全自动", Toast.LENGTH_SHORT).show()
         }
 
+        TopOnManager.loadInterstitialAutoAd(this)
         binding.btnInterstitialAuto.setOnClickListener {
-            ATInterstitialAutoAd.init(
-                this,
-                TopOnManager.getPlacementIds(TopOnAdType.Interstitial).toTypedArray(),
-                object : ATInterstitialAutoLoadListener {
-                    override fun onInterstitialAutoLoaded(placementId: String) {
-                        Log.d(TAG, "onInterstitialAutoLoaded: $placementId")
-                        showInterstitialAutoAd(placementId)
-                    }
-
-                    override fun onInterstitialAutoLoadFail(placementId: String?, error: AdError?) {
-                        Log.e(
-                            TAG,
-                            "onInterstitialAutoLoadFail: $placementId ${error?.fullErrorInfo}"
-                        )
-                    }
-
-                })
+            TopOnManager.showInterstitialAutoAd(this)
         }
     }
 
@@ -238,22 +180,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ===== 激励视频 =====
-
-
-    // ===== 激励视频全自动加载 =====
-    private fun showRewardVideoAutoAd(placement: String) {
-        if (ATRewardVideoAutoAd.isAdReady(placement)) {
-            ATRewardVideoAutoAd.show(this, placement, autoRewardVideoAdEventListener)
-        }
-    }
-
-    private fun setRewardVideoAutoLocalExtra(placementId: String) {
-        val map = getPlacementIdLocalExtra(placementId)
-        //从下一次的广告加载开始生效
-        ATRewardVideoAutoAd.setLocalExtra(placementId, map)
-    }
-
-    // ===== 激励视频全自动加载 =====
 
     // ===== 插页广告全自动加载 =====
     private fun showInterstitialAutoAd(placement: String) {
